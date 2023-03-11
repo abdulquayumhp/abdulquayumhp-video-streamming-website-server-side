@@ -34,6 +34,9 @@ async function mongodbConnect() {
         const JobTaskVideoStemmingMessage = client
             .db("jobTaskStreming")
             .collection("allMessage");
+        const JobTaskVideoStemmingNotifications = client
+            .db("jobTaskStreming")
+            .collection("Notifications");
 
 
         app.get("/allVideo", async (req, res) => {
@@ -60,8 +63,49 @@ async function mongodbConnect() {
             const result = await JobTaskVideoStemmingMessage.find(query).toArray()
             res.send(result)
         })
+        app.get("/notification", async (req, res) => {
 
+            const result = await JobTaskVideoStemmingNotifications.find({}).toArray()
+            res.send(result)
+        })
 
+        app.put("/likeUpdate", async (req, res) => {
+            const body = req.body;
+            // console.log(body)
+            const notification = {
+                id: body?.id,
+                title: body?.title
+
+            }
+            const videoNotiFication = await JobTaskVideoStemmingNotifications.insertOne(notification)
+            const filter = { _id: new ObjectId(body?.id) };
+            const updateCount = req.body;
+            const options = { upsert: true }
+            const updateDoc = {
+                $push: {
+                    videoLike: body?.id,
+                }
+            }
+            const result = await JobTaskVideoStemming.updateOne(filter, updateDoc, options);
+            // console.log("2", result)
+            res.send(result);
+        })
+        app.put("/VewerUpdate", async (req, res) => {
+            const id = req.body.e;
+            console.log(id)
+            const filter = { _id: new ObjectId(id) };
+            const updateCount = req.body;
+            console.log("1", updateCount)
+            const options = { upsert: true }
+            const updateDoc = {
+                $push: {
+                    videoViewer: id,
+                }
+            }
+            const result = await JobTaskVideoStemming.updateOne(filter, updateDoc, options);
+            console.log("2", result)
+            res.send(result);
+        })
 
 
 
