@@ -45,9 +45,11 @@ async function mongodbConnect() {
         })
         app.get("/singleVideo/:id", async (req, res) => {
             const id = req.params.id
+            console.log(id)
             const query = { _id: new ObjectId(id) }
 
             const result = await JobTaskVideoStemming.findOne(query)
+            console.log(result)
             res.send(result)
         })
 
@@ -64,8 +66,7 @@ async function mongodbConnect() {
             res.send(result)
         })
         app.get("/notification", async (req, res) => {
-
-            const result = await JobTaskVideoStemmingNotifications.find({}).toArray()
+            const result = await JobTaskVideoStemmingNotifications.find({}).sort({ _id: -1 }).toArray()
             res.send(result)
         })
 
